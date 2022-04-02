@@ -35,23 +35,34 @@ def get_quickdef(bs):
     wordsin = []
     wordsout = []
     try:
-        wordsin = [ i.contents[0] for i in bs.find_all('h1',{'class':'source-text'}) ]
-        wordsout = [ i.text for i in bs.find_all('div',{'class':'el'}) ]
+        wordin = bs.find('div', id='headword-en').h1.text
+        wordout = bs.find('div', id='quickdef1-en').text
+    except AttributeError:
+        return get_quickdef_es(bs)
+        exit(1)
+    return wordin, wordout
+
+def get_quickdef_es(bs):
+    wordsin = []
+    wordsout = []
+    try:
+        wordin = bs.find('div', id='headword-es').h1.text
+        wordout = bs.find('div', id='quickdef1-es').text
+
     except AttributeError:
         print('Word not found.')
         exit(1)
-    return wordsin, wordsout
+    return wordin, wordout
 
-def print_quickdef(wordsin, wordsout):
+def print_quickdef(wordin, wordsout):
     print('------------------------------')
-    for i,o in zip(wordsin, wordsout):
-        print(red+i+res+': '+red+o+res)
+    print(red+wordin+res+': '+red+wordsout+res)
     print('------------------------------')
 
 def print_translation_body(bs):
     # try to read the neodict dictionary
     try:
-        for c in bs.find('div',{'class':'dictionary-neodict'}).children:
+        for c in bs.find('div',{'class':'dictionary-neodict-en'}).children:
             if 'part_of_speech' in c.get('class'):
                 print(grn+c.text.upper()+res)
             elif 'dictionary-neodict-indent-1' in c.get('class'):
@@ -95,26 +106,9 @@ def print_translation_body(bs):
 def translate(word):
     bs = get_soup('translate',word)
 
-    # get both language translations, if the word is in both languages
-    en = bs.find('div',{'id':'translate-en'})
-    es = bs.find('div',{'id':'translate-es'})
-    if en and es:
-        print(yel+'===================== Spanish to English ====================='+res)
-        # print english
-        wordin,wordsout = get_quickdef(en)
-        print_quickdef(wordin, wordsout)
-        if print_translation_body(en): print_quickdef(wordin, wordsout)
-        print(yel+'===================== English to Spanish ====================='+res)
-        # print spanish
-        wordin,wordsout = get_quickdef(es)
-        print_quickdef(wordin, wordsout)
-        if print_translation_body(es): print_quickdef(wordin, wordsout)
-    else:
-        # only one translation, so print whatever is there
-        wordin,wordsout = get_quickdef(bs)
-        print_quickdef(wordin, wordsout)
-        print_translation_body(bs)
-        print_quickdef(wordin, wordsout)
+    wordin,wordsout = get_quickdef(bs)
+    print_quickdef(wordin, wordsout)
+    print_translation_body(bs)
 
 def gettables(soup):
     """ Get TCLASS from HTML.
