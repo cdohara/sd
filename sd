@@ -62,7 +62,7 @@ def print_quickdef(wordin, wordsout):
 def print_translation_body(bs):
     # try to read the neodict dictionary
     try:
-        for c in bs.find('div',{'class':'dictionary-neodict-en'}).children:
+        for c in bs.find('div',{'class':'_7Px27Lfg'}).children:
             if 'part_of_speech' in c.get('class'):
                 print(grn+c.text.upper()+res)
             elif 'dictionary-neodict-indent-1' in c.get('class'):
@@ -114,7 +114,7 @@ def gettables(soup):
     """ Get TCLASS from HTML.
 SOUP is a BeautifulSoup object scrapped by BeautifulSoup. TCLASS is the
 table class that we want. """
-    table = soup.find("div", attrs={"class": "card"})
+    table = soup.find("table", attrs={"class": "_2WLTGmgs"})
     for w in table.find_all('span',{'class':'conj-irregular'}):
         w.replace_with(red+w.text+res)
     rows = table.find_all("tr")
@@ -151,7 +151,6 @@ def conjugate(verb):
         print(tabulate(table[1:], headers=table[0], tablefmt="orgtbl"),
                 end='\n\n')
         table_no += 1
-    print_quickdef(wordin, wordsout)
 
 def make_ascii(word):
     return word.lower().replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u').replace('ü','u').replace('ñ','n')
