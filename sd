@@ -60,47 +60,7 @@ def print_quickdef(wordin, wordsout):
     print('------------------------------')
 
 def print_translation_body(bs):
-    # try to read the neodict dictionary
-    try:
-        for c in bs.find('div',{'class':'_7Px27Lfg'}).children:
-            if 'part_of_speech' in c.get('class'):
-                print(grn+c.text.upper()+res)
-            elif 'dictionary-neodict-indent-1' in c.get('class'):
-                print('  '+blu+c.find('span',{'class':'context'}).text+res)
-                for d in c.find('div',{'class':'dictionary-neodict-indent-2'}).children:
-                    if 'dictionary-neodict-translation' in d.get('class'):
-                        print('    '+d.text)
-                    elif d.text != '':
-                        for ex in d.find_all('div',{'class':'dictionary-neodict-example'}):
-                            e = [e for e in ex.children]
-                            print('      '+e[0].text)
-                            print(gry+"       '-> ",end='')
-                            print(e[2].text+res)
-        return True
-    except AttributeError:
-        pass
-
-    # try to read the neoharrap dictionary
-    try:
-        for c in bs.find('div',{'class':'dictionary-neoharrap'}).children:
-            if 'part_of_speech' in c.get('class'):
-                print(grn+c.text.upper()+res)
-            elif 'dictionary-neoharrap-indent-1' in c.get('class'):
-                print('  '+blu+c.find('span',{'class':'context'}).text+res)
-                for d in c.find('div',{'class':'dictionary-neoharrap-indent-2'}).children:
-                    if 'dictionary-neoharrap-translation' in d.get('class'):
-                        print('    '+d.text)
-                    elif d.text != '':
-                        for ex in d.find_all('div',{'class':'dictionary-neoharrap-example'}):
-                            e = [e for e in ex.children]
-                            print('      '+e[0].text)
-                            print(gry+"       '-> ",end='')
-                            print(e[2].text+res)
-        return True
-    except AttributeError:
-        pass
-
-    print(gry+'No extended translations available'+res)
+    # broken atm
     return False
 
 def translate(word):
@@ -111,24 +71,29 @@ def translate(word):
     print_translation_body(bs)
 
 def gettables(soup):
-    """ Get TCLASS from HTML.
-SOUP is a BeautifulSoup object scrapped by BeautifulSoup. TCLASS is the
-table class that we want. """
-    table = soup.find("table", attrs={"class": "_2WLTGmgs"})
-    for w in table.find_all('span',{'class':'conj-irregular'}):
-        w.replace_with(red+w.text+res)
-    rows = table.find_all("tr")
-    tbls = []
-    for row in rows:
-        x = row.find_all("td")
-        tbls.append([i.text.strip() for i in x])
-    tbls = [tbls[i:i+7] for i in range(0, len(tbls), 7)]
-    return tbls
+    # this may need to be changed depending on future updates
+    tables = soup.find_all("table", attrs={"class": "_2WLTGmgs"})
+
+    # this contains all of the tables in one big table
+    mastertable = []
+
+    for table in tables:
+        for w in table.find_all('span',{'class':'conj-irregular'}):
+            w.replace_with(red+w.text+res)
+        rows = table.find_all("tr")
+        tbls = []
+        for row in rows:
+            x = row.find_all("td")
+            tbls.append([i.text.strip() for i in x])
+        tbls = [tbls[i:i+7] for i in range(0, len(tbls), 7)]
+        mastertable.extend(tbls)
+    return mastertable
 
 def conjugate(verb):
     soup = get_soup('conjugate',verb)
     wordin, wordsout = get_quickdef(soup)
     title = [grn+"INDICATIVE"+res, grn+"SUBJUNCTIVE"+res, grn+"IMPERATIVE"+res]
+    # continuation is PROGRESSIVE, PERFECT, PERFECT SUBJUNCTIVE
     tables = gettables(soup)
     print_quickdef(wordin, wordsout)
     if len(tables) == 0:

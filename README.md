@@ -13,7 +13,7 @@ Check out the output of `sd cat`:
 
 Also check out the output of `sd conj tener` (colorized version of nick96's code):
 
-![example2](https://raw.githubusercontent.com/rexroni/sd/master/example2.png)
+![example2](example2.png)
 
 ## Dependencies
 `sd` is a python 3 script built on "BeautifulSoup 4" and "Tabulate".  Dependencies can be installed by running `pip3 install beautifulsoup4` and `pip3 install tabulate` (you might need root priviledges on your system).
