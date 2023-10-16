@@ -70,9 +70,24 @@ def translate(word):
     print_quickdef(wordin, wordsout)
     print_translation_body(bs)
 
+def gettableclass(soup):
+    tables = soup.find_all('table')
+    for table in tables:
+        rows = table.find_all('td')
+        for row in rows:
+            if row.text == 'you' or row.text == 'yo':
+                if table.get('class'):
+                    return table.get('class')[0]
+    print("Something went wrong with finding the conjugation table. Sorry.")
+    quit(1)
+
 def gettables(soup):
-    # this may need to be changed depending on future updates
-    tables = soup.find_all("table", attrs={"class": "_2WLTGmgs"})
+    table_class = None
+    # Locate the tables if class name not found yet
+    if (table_class is None):
+        table_class = gettableclass(soup)
+
+    tables = soup.find_all("table", attrs={"class": table_class})
 
     # this contains all of the tables in one big table
     mastertable = []
